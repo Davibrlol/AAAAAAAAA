@@ -1,30 +1,32 @@
 <script>
-import axios from "axios";
+import TimesApi from "@/api/times.js";
+const timesApi = new TimesApi();
 export default {
   data() {
     return {
-      novo_time: "",
+      time: {},
       times: [],
     };
   },
   async created() {
-    const times = await axios.get("http://localhost:4000/times");
-    this.times = times.data;
+    this.times = await timesApi.buscarTodosOsTimes();
   },
-
   methods: {
     async salvar() {
-      const time = {
-        nome: this.novo_time,
-      };
-      const time_criado = await axios.post("http://localhost:4000/times", time);
-      this.times.push(time_criado.data);
-      this.novo_time = "";
+      if (this.time.id) {
+        await timesApi.atualizarTime(this.time);
+      } else {
+        await timesApi.adicionarTime(this.time);
+      }
+      this.times = await timesApi.buscarTodosOsTimes();
+      this.time = {};
     },
     async excluir(time) {
-      await axios.delete(`http://localhost:4000/times/${time.id}`);
-      const indice = this.times.indexOf(time);
-      this.times.splice(indice, 1);
+      await timesApi.excluirTime(time.id);
+      this.times = await timesApi.buscarTodosOsTimes();
+    },
+    editar(time) {
+      Object.assign(this.time, time);
     },
   },
 };
@@ -33,31 +35,33 @@ export default {
   <div class="container">
     <div class="title">
       <h2>Gerenciamento de times</h2>
-      <p></p>
     </div>
     <div class="form-input">
-      <input type="text" placeholder="Time" v-model="novo_time" />
-      <button @click="salvar">Salvar</button>
+      <input type="text" v-model="time.nome" @keyup.enter="salvar" />
+      <button @click="salvar">Adicionar</button>
+    </div>
+    <div class="list-items">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="time in times" :key="time.id">
+            <td>{{ time.id }}</td>
+            <td>{{ time.nome }}</td>
+            <td>
+              <button @click="editar(time)">Editar</button>
+              <button @click="excluir(time)">Excluir</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="list-itens">
-    <table>
-      <thead>
-        <tr>
-          <td>ID</td>
-          <td>Nome</td>
-          <td>Ações</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="time in times" :key="time.id">
-          <td>{{ time.id }}</td>
-          <td>{{ time.nome }}</td>
-          <td>
-            <button @click="excluir(time)">excluir</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 </template>
+
+<style></style>

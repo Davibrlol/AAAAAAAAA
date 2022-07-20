@@ -1,3 +1,23 @@
 {
-  "times": []
+  "times": [
+    {
+      "nome": "as",
+      "id": 1
+    },
+    {
+      "nome": "asd",
+      "id": 2
+    }
+  ],
+  "jogadores": [
+    {
+      "nome": "sa",
+      "anoNascimento": "sa",
+      "posicaoJogo": "sa",
+      "altura": "sa",
+      "peso": "sa",
+      "timeId": 2,
+      "id": 1
+    }
+  ]
 }

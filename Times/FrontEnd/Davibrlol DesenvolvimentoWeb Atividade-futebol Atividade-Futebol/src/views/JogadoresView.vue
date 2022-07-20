@@ -19,17 +19,20 @@ export default {
       this.times = times.data;
     },
     async buscarTodosOsJogadores() {
-      const jogadores = await axios.get(
-        "http://localhost:4000/jogadores?expand=time"
-      );
+      const jogadores = await axios.get("http://localhost:4000/jogadores?expand=time");
       this.jogadores = jogadores.data;
     },
     async salvar() {
       await axios.post("http://localhost:4000/jogadores", this.jogador);
       await this.buscarTodosOsJogadores();
     },
+    async excluir(jogador) {
+      await axios.delete(`http://localhost:4000/jogadores/${jogador.id}`);
+      const indice = this.jogadores.indexOf(jogador);
+      this.jogadores.splice(indice, 1);
   },
-};
+}
+}
 </script>
 
 <template>
@@ -53,12 +56,12 @@ export default {
       <input type="text" v-model="jogador.peso" placeholder="Peso" />
 
       <select v-model="jogador.timeId">
-        <option v-for="time in times" :key="time.id" value="time.id">
+        <option v-for="time in times" :key="time.id" :value="time.id">
           {{ time.nome }}
         </option>
       </select>
-      
-      <button @click="Salvar">Enviar</button>
+
+      <button @click="salvar">Enviar</button>
     </div>
   </div>
   <div class="list-items">
@@ -84,7 +87,7 @@ export default {
           <td>{{ jogador.posicaoJogo }}</td>
           <td>{{ 2022 - jogador.anoNascimento }}</td>
           <td>{{ jogador.time.nome }}</td>
-          <td>???</td>
+          <td> <button @click="excluir(jogador)">excluir</button> </td>
         </tr>
       </tbody>
     </table>
